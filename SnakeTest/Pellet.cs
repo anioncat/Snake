@@ -3,14 +3,13 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace SnakeTest
 {
-    class Pellet : Entity
+    internal class Pellet : Entity
     {
         public int SIZE { get; } = 20;
         public bool Active { get; set; }
+
         public Pellet()
-        {
-            this.Active = false;
-        }
+        { this.Active = false; }
 
         public void Spawn(Point pos)
         {
