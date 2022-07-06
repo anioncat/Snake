@@ -78,8 +78,7 @@ namespace SnakeTest
             // Get current keyboard state
             KeyboardState kbFrameState = Keyboard.GetState();
 
-            // Check state of movement keys
-            // i = left right up down
+            // Check state of movement keys i = left right up down
             for (int i = 0; i < movementKeys.Length; ++i)
             {
                 // Blocks a key being held down blocking movement in other directions
@@ -106,11 +105,14 @@ namespace SnakeTest
             // Spawn pellet if unavailable
             if (!pellet.Active)
             {
-                pellet.Spawn(pellet.GetRandomPos(rng, window.Width - pellet.SIZE, window.Height - pellet.SIZE));
-                Debug.WriteLine("pellet spawned at: " + pellet.BoundingBox.X + "," + pellet.BoundingBox.Y);
+                Point randomPos = gg.SnapPosition(GetRandomPos(rng, window.Width - pellet.Size.X, window.Height - pellet.Size.Y));
+                pellet.Spawn(randomPos);
+                Debug.WriteLine($"pellet spawned at: ({pellet.BoundingBox.X}, {pellet.BoundingBox.Y})");
             }
             base.Update(gameTime);
         }
+
+        private Point GetRandomPos(Random rng, int w, int h) => new Point(rng.Next(w), rng.Next(h));
 
         protected override void Draw(GameTime gameTime)
         {

@@ -16,6 +16,14 @@ namespace SnakeTest
 
         public abstract void Draw(SpriteBatch _spriteBatch, Texture2D tex);
 
-        public virtual Point GetRandomPos(Random rng, int w, int h) => new Point(rng.Next(w), rng.Next(h));
+        public struct EntitySize
+        {
+            public int X { get; set; }
+
+            public int Y { get; set; }
+
+            public EntitySize(int x, int y)
+            { X = x; Y = y; }
+        }
     }
 }

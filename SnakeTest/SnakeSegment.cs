@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace SnakeTest
 {
-    internal enum KeyDirection
+    internal enum MoveDirection
     {
         Left = 1 << 0,
         Right = 1 << 1,
@@ -16,6 +16,13 @@ namespace SnakeTest
         protected SnakeSegment next;
         protected SnakeSegment prev;
 
+        public MoveDirection Direction { get; set; }
+
+        private EntitySize size = new EntitySize(15, 15);
+
+        public EntitySize Size
+        { get { return size; } }
+
         public SnakeSegment()
         { }
 
@@ -24,11 +31,8 @@ namespace SnakeTest
             this.next = null;
             this.prev = prevSegment;
             this.Position = pos;
-            this.boundingBox = new Rectangle(this.Position, new Point(Size));
+            this.boundingBox = new Rectangle(this.Position, new Point(Size.X, Size.Y));
         }
-
-        public int Direction { get; set; }
-        public int Size { get; } = 15;
 
         public virtual void AddSegment()
         {
@@ -44,10 +48,8 @@ namespace SnakeTest
 
         public virtual void Update(WindowSize w)
         {
-            // Move in same direction
-            // Update direction to head's direction
-            // Rotate if direction changed
-            // Cascade
+            // Move in same direction Update direction to head's direction Rotate if direction
+            // changed Cascade
             if (!(this.next is null)) this.next.Update(w);
 
             this.boundingBox.X = prev.boundingBox.X;
