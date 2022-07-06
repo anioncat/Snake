@@ -8,15 +8,15 @@ namespace SnakeTest
         private static readonly byte SPEED_INCREASE = 0;
         private int score;
         private byte speed = 3;
+        private DoublePoint playerPos;
 
         public Player(Point startingPosition)
         {
             score = 0;
-            // LRUD
-            this.Direction = 0;
-
-            this.Position = startingPosition;
-            this.boundingBox = new Rectangle(this.Position, new Point(Size.X, Size.Y));
+            Direction = 0;
+            Position = startingPosition;
+            playerPos = new DoublePoint(Position.X, Position.Y);
+            boundingBox = new Rectangle(Position, new Point(Size.X, Size.Y));
         }
 
         public int Score
@@ -41,38 +41,50 @@ namespace SnakeTest
 
         public override void Draw(SpriteBatch _spriteBatch, Texture2D tex)
         {
-            _spriteBatch.Draw(tex, this.boundingBox, Color.White);
+            _spriteBatch.Draw(tex, boundingBox, Color.White);
             if (!(next is null)) next.Draw(_spriteBatch, tex);
         }
 
         public void IncreaseSpeed()
         {
-            this.speed += SPEED_INCREASE;
+            speed += SPEED_INCREASE;
         }
 
-        public override void Update(WindowSize w)
+        public void Update(WindowSize w)
         {
-            if (!(this.next is null)) this.next.Update(w);
+            if (!(next is null)) next.Update();
             if (Direction == MoveDirection.Left)
             {
-                this.boundingBox.X -= speed;
-                if (this.boundingBox.X <= 0) this.boundingBox.X = w.Width - Size.X;
+                boundingBox.X -= speed;
+                if (boundingBox.X <= 0) boundingBox.X = w.Width - Size.X;
             }
             if (Direction == MoveDirection.Right)
             {
-                this.boundingBox.X += speed;
-                if (this.boundingBox.X >= w.Width) this.boundingBox.X = 0;
+                boundingBox.X += speed;
+                if (boundingBox.X >= w.Width - Size.X) boundingBox.X = 0;
             }
             if (Direction == MoveDirection.Up)
             {
-                this.boundingBox.Y -= speed;
-                if (this.boundingBox.Y <= 0) this.boundingBox.Y = w.Height - Size.Y;
+                boundingBox.Y -= speed;
+                if (boundingBox.Y <= 0) boundingBox.Y = w.Height - Size.Y;
             }
             if (Direction == MoveDirection.Down)
             {
-                this.boundingBox.Y += speed;
-                if (this.boundingBox.Y >= w.Height) this.boundingBox.Y = 0;
+                boundingBox.Y += speed;
+                if (boundingBox.Y >= w.Height - Size.Y) boundingBox.Y = 0;
             }
+        }
+
+        // Mutable co-ordinates of double type
+        public struct DoublePoint
+        {
+            public double X { get; set; }
+            public double Y { get; set; }
+
+            public DoublePoint(double x, double y)
+            { X = x; Y = y; }
+
+            public override string ToString() => $"({X}, {Y})";
         }
     }
 }

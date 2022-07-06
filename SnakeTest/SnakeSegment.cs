@@ -18,9 +18,9 @@ namespace SnakeTest
 
         public MoveDirection Direction { get; set; }
 
-        private EntitySize size = new EntitySize(15, 15);
+        private Point size = new Point(15, 15);
 
-        public EntitySize Size
+        public Point Size
         { get { return size; } }
 
         public SnakeSegment()
@@ -46,11 +46,11 @@ namespace SnakeTest
             if (!(next is null)) next.Draw(_spriteBatch, tex);
         }
 
-        public virtual void Update(WindowSize w)
+        public virtual void Update()
         {
             // Move in same direction Update direction to head's direction Rotate if direction
             // changed Cascade
-            if (!(this.next is null)) this.next.Update(w);
+            if (!(this.next is null)) this.next.Update();
 
             this.boundingBox.X = prev.boundingBox.X;
             this.boundingBox.Y = prev.boundingBox.Y;

@@ -5,17 +5,17 @@ namespace SnakeTest
 {
     internal class Pellet : Entity
     {
-        private EntitySize size;
+        private Point size;
 
         public bool Active { get; set; }
 
-        public EntitySize Size
+        public Point Size
         { get { return size; } }
 
         public Pellet()
         {
             this.Active = false;
-            size = new EntitySize(20, 20);
+            size = new Point(20, 20);
         }
 
         public override void Draw(SpriteBatch _spriteBatch, Texture2D tex)

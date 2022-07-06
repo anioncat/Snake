@@ -2,7 +2,7 @@
 
 namespace SnakeTest
 {
-    // Encapsulate co-ordinates of the grid
+    // Encapsulate co-ordinates of the grid, immutable
     internal readonly struct GridIndex
     {
         public int X { get; }
@@ -22,9 +22,6 @@ namespace SnakeTest
         // Discretise the window size to get the grid numbers Spacing is updated with the window,
         // else is read only to other objects
         private readonly double[] discretisedSpace = new double[2];
-
-        // The grid containing pointers to Entities
-        private readonly Entity[,] grid = new Entity[GRID_SIZE, GRID_SIZE];
 
         public double DiscreteX
         { get { return discretisedSpace[0]; } }
@@ -49,22 +46,12 @@ namespace SnakeTest
             return new Point(pos.X - xOffset, pos.Y - yOffset);
         }
 
-        public Entity GetEntity(int x, int y)
-        { return grid[x, y]; }
-
-        public Entity GetEntity(GridIndex gi)
-        { return grid[gi.X, gi.Y]; }
-
-        public void UpdateEntity(Entity e, GridIndex gi)
-        {
-            grid[gi.X, gi.Y] = e;
-        }
-
         // Updates the spacing between grid indices wrt window size
         public void UpdateWindow(int windowWidth, int windowHeight)
         {
             discretisedSpace[0] = windowWidth / GRID_SIZE;
             discretisedSpace[1] = windowHeight / GRID_SIZE;
+            System.Diagnostics.Debug.WriteLine($"Grid size snapped at ({discretisedSpace[0]}, {discretisedSpace[1]}) for W:{windowWidth} H:{windowHeight}");
         }
     }
 }

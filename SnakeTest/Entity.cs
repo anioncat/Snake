@@ -15,15 +15,5 @@ namespace SnakeTest
         public virtual Point Position { get; set; }
 
         public abstract void Draw(SpriteBatch _spriteBatch, Texture2D tex);
-
-        public struct EntitySize
-        {
-            public int X { get; set; }
-
-            public int Y { get; set; }
-
-            public EntitySize(int x, int y)
-            { X = x; Y = y; }
-        }
     }
 }

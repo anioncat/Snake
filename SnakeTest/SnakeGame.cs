@@ -55,9 +55,6 @@ namespace SnakeTest
             player = new Player(pStart);
             pellet = new Pellet();
 
-            gg.UpdateEntity(player, gg.CalculateIndex(player.Position));
-            gg.UpdateEntity(pellet, gg.CalculateIndex(pellet.Position));
-
             base.Initialize();
         }
 
