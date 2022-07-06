@@ -13,7 +13,7 @@ namespace SnakeTest
         public Player(Point startingPosition)
         {
             // LRUD
-            this.Direction = new bool[] { false, false, false, false };
+            this.Direction = 0;
 
             this.Position = startingPosition;
             this.boundingBox = new Rectangle(this.Position, new Point(Size));
@@ -27,12 +27,9 @@ namespace SnakeTest
         public void ChangeDirection(int i)
         {
             // Block turn back on self
-            if (Direction[0] && i == 1) return;
-            if (Direction[1] && i == 0) return;
-            if (Direction[2] && i == 3) return;
-            if (Direction[3] && i == 2) return;
-            Array.Clear(Direction, 0, 4);
-            Direction[i] = true;
+            if ((Direction | i) == (int)(KeyDirection.Right | KeyDirection.Left)) return;
+            if ((Direction | i) == (int)(KeyDirection.Up | KeyDirection.Down)) return;
+            Direction = i;
         }
 
         public override void Draw(SpriteBatch _spriteBatch, Texture2D tex)
@@ -49,22 +46,22 @@ namespace SnakeTest
         public override void Update(WindowSize w)
         {
             if (!(this.next is null)) this.next.Update(w);
-            if (Direction[0])
+            if (Direction == (int)KeyDirection.Left)
             {
                 this.boundingBox.X -= speed;
                 if (this.boundingBox.X <= 0) this.boundingBox.X = w.Width - Size;
             }
-            if (Direction[1])
+            if (Direction == (int)KeyDirection.Right)
             {
                 this.boundingBox.X += speed;
                 if (this.boundingBox.X >= w.Width) this.boundingBox.X = 0;
             }
-            if (Direction[2])
+            if (Direction == (int)KeyDirection.Up)
             {
                 this.boundingBox.Y -= speed;
                 if (this.boundingBox.Y <= 0) this.boundingBox.Y = w.Height - Size;
             }
-            if (Direction[3])
+            if (Direction == (int)KeyDirection.Down)
             {
                 this.boundingBox.Y += speed;
                 if (this.boundingBox.Y >= w.Height) this.boundingBox.Y = 0;

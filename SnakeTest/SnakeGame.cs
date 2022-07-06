@@ -82,10 +82,10 @@ namespace SnakeTest
             // i = left right up down
             for (int i = 0; i < movementKeys.Length; ++i)
             {
-                // Does this even work? Think this blocks key hold down repeated updates
+                // Blocks a key being held down blocking movement in other directions
                 if (oldState.IsKeyUp(movementKeys[i]) && kbFrameState.IsKeyDown(movementKeys[i]))
                 {
-                    player.ChangeDirection(i);
+                    player.ChangeDirection(1 << i);
                     break;
                 }
             }

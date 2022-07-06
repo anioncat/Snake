@@ -5,10 +5,10 @@ namespace SnakeTest
 {
     internal enum KeyDirection
     {
-        LEFT = 1 << 0,
-        RIGHT = 1 << 1,
-        UP = 1 << 2,
-        DOWN = 1 << 3
+        Left = 1 << 0,
+        Right = 1 << 1,
+        Up = 1 << 2,
+        Down = 1 << 3
     }
 
     internal class SnakeSegment : Entity
@@ -27,7 +27,7 @@ namespace SnakeTest
             this.boundingBox = new Rectangle(this.Position, new Point(Size));
         }
 
-        public bool[] Direction { get; set; }
+        public int Direction { get; set; }
         public int Size { get; } = 15;
 
         public virtual void AddSegment()
