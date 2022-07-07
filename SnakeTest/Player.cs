@@ -4,23 +4,18 @@ namespace SnakeTest
 {
     internal class Player : SnakeSegment
     {
-        private static double speedIncrease = 0.1;
+        private static double speedIncrease = 0.2;
         private GridIndex newGridPos;
         private DoublePoint playerPos;
         private GridIndex prevGridPos;
-        private int score;
         private double speed = 2.5;
         private static bool moveLock = false;
 
         public bool MoveLock
         { get { return moveLock; } }
 
-        public int Score
-        { get { return score; } }
-
         public Player(Point startingPosition)
         {
-            score = 0;
             Direction = 0;
             Position = startingPosition;
             playerPos = startingPosition;
@@ -30,8 +25,6 @@ namespace SnakeTest
 
         public override void AddSegment()
         {
-            score += 1;
-            System.Diagnostics.Debug.WriteLine($"Score: {score}");
             IncreaseSpeed();
             base.AddSegment();
         }
@@ -65,7 +58,7 @@ namespace SnakeTest
 
                 case MoveDirection.Right:
                     playerPos.X += speed;
-                    if (playerPos.X >= w.Width - Size.X) playerPos.X = 0.0;
+                    if (playerPos.X >= w.Width) playerPos.X = 0.0;
                     break;
 
                 case MoveDirection.Up:
@@ -75,7 +68,7 @@ namespace SnakeTest
 
                 case MoveDirection.Down:
                     playerPos.Y += speed;
-                    if (playerPos.Y >= w.Height - Size.Y) playerPos.Y = 0.0;
+                    if (playerPos.Y >= w.Height) playerPos.Y = 0.0;
                     break;
             }
             // Determine whether the player has moved over a grid threshold. GridPos are struct so

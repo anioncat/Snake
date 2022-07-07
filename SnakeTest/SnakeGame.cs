@@ -18,13 +18,12 @@ namespace SnakeTest
 
     public class SnakeGame : Game
     {
+        private static readonly Keys[] movementKeys = new Keys[] { Keys.Left, Keys.Right, Keys.Up, Keys.Down };
+        private static GameGrid gg;
+        private static int score;
+        private static WindowSize window = new WindowSize(600, 600);
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-
-        private static WindowSize window = new WindowSize(600, 600);
-        private static readonly GameGrid gg = new GameGrid(window.Width, window.Height);
-        private static readonly Keys[] movementKeys = new Keys[] { Keys.Left, Keys.Right, Keys.Up, Keys.Down };
-
         private KeyboardState oldState;
         private Pellet pellet;
         private Player player;
@@ -43,11 +42,59 @@ namespace SnakeTest
             IsMouseVisible = true;
         }
 
+        private void CheckPlayerCollision()
+        {
+            // Check collision
+            if (pellet.BoundingBox.Intersects(player.BoundingBox))
+            {
+                pellet.Active = false;
+                score += 1;
+                player.AddSegment();
+                player.IncreaseSpeed();
+            }
+        }
+
+        private Point GenerateValidPelletSpawn()
+        {
+            Point randomPos = gg.SnapPosition(GetRandomPos(rng, window.Width - pellet.Size.X, window.Height - pellet.Size.Y));
+            while (player.CheckContains(randomPos))
+            {
+                Debug.WriteLine($"pellet failed to spawn. retrying.");
+                randomPos = gg.SnapPosition(GetRandomPos(rng, window.Width - pellet.Size.X, window.Height - pellet.Size.Y));
+            }
+            return randomPos;
+        }
+
         private Point GetRandomPos(Random rng, int w, int h) => new Point(rng.Next(w), rng.Next(h));
+
+        private void SpawnNewPellet()
+        {
+            pellet.Spawn(GenerateValidPelletSpawn());
+            Debug.WriteLine($"pellet spawned at: ({pellet.BoundingBox.X}, {pellet.BoundingBox.Y})");
+        }
 
         private void UpdateEntitySize(GameGrid gg, Entity e)
         {
             e.UpdateSize((int)gg.DiscreteX, (int)gg.DiscreteY);
+        }
+
+        private void UpdatePlayerMovementDirection()
+        {
+            // Get current keyboard state
+            KeyboardState kbFrameState = Keyboard.GetState();
+
+            // Check state of movement keys i = left right up down
+            for (int i = 0; i < movementKeys.Length; ++i)
+            {
+                // Blocks a key being held down blocking movement in other directions
+                if (!player.MoveLock && oldState.IsKeyUp(movementKeys[i]) && kbFrameState.IsKeyDown(movementKeys[i]))
+                {
+                    player.ChangeDirection(1 << i);
+                    break;
+                }
+            }
+            // Update old state
+            oldState = kbFrameState;
         }
 
         protected override void Draw(GameTime gameTime)
@@ -64,6 +111,7 @@ namespace SnakeTest
 
         protected override void Initialize()
         {
+            gg = new GameGrid(window.Width, window.Height);
             // Initalise random number generator
             rng = new Random();
             // Initialise player position
@@ -91,55 +139,14 @@ namespace SnakeTest
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // Get current keyboard state
-            KeyboardState kbFrameState = Keyboard.GetState();
-
-            // Check state of movement keys i = left right up down
-            for (int i = 0; i < movementKeys.Length; ++i)
-            {
-                // If direction is locked add to a buffer
-                if (player.MoveLock)
-                {
-                }
-                // Blocks a key being held down blocking movement in other directions
-                else if (oldState.IsKeyUp(movementKeys[i]) && kbFrameState.IsKeyDown(movementKeys[i]))
-                {
-                    player.ChangeDirection(1 << i);
-                    break;
-                }
-            }
-            // Update old state
-            oldState = kbFrameState;
-
-            // Check collision
-            if (pellet.BoundingBox.Intersects(player.BoundingBox))
-            {
-                pellet.Active = false;
-                player.AddSegment();
-                player.IncreaseSpeed();
-            }
-
             // Update player
+            UpdatePlayerMovementDirection();
+            CheckPlayerCollision();
             player.Update(window, gg);
 
-            // Spawn pellet if unavailable
-            if (!pellet.Active)
-            {
-                bool valid = false;
-                Point randomPos = gg.SnapPosition(GetRandomPos(rng, window.Width - pellet.Size.X, window.Height - pellet.Size.Y));
-                while (!valid)
-                {
-                    if (!player.CheckContains(randomPos))
-                    { valid = true; }
-                    else
-                    {
-                        Debug.WriteLine($"pellet failed to spawn. retrying.");
-                        randomPos = gg.SnapPosition(GetRandomPos(rng, window.Width - pellet.Size.X, window.Height - pellet.Size.Y));
-                    }
-                }
-                pellet.Spawn(randomPos);
-                Debug.WriteLine($"pellet spawned at: ({pellet.BoundingBox.X}, {pellet.BoundingBox.Y})");
-            }
+            // Spawn pellet if eaten
+            if (!pellet.Active) SpawnNewPellet();
+
             base.Update(gameTime);
         }
     }
