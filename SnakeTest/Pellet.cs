@@ -5,7 +5,7 @@ namespace SnakeTest
 {
     internal class Pellet : Entity
     {
-        private Point size;
+        private Point size = new Point(20, 20);
 
         public bool Active { get; set; }
 
@@ -13,15 +13,10 @@ namespace SnakeTest
         { get { return size; } }
 
         public Pellet()
-        {
-            this.Active = false;
-            size = new Point(20, 20);
-        }
+        { Active = false; }
 
         public override void Draw(SpriteBatch _spriteBatch, Texture2D tex)
-        {
-            _spriteBatch.Draw(tex, this.boundingBox, Color.White);
-        }
+        { _spriteBatch.Draw(tex, this.boundingBox, Color.White); }
 
         public void Spawn(Point pos)
         {
@@ -30,10 +25,10 @@ namespace SnakeTest
             this.Active = true;
         }
 
-        public void UpdateSize(GameGrid gg)
+        public override void UpdateSize(int x, int y)
         {
-            size.X = (int)gg.DiscreteX;
-            size.Y = (int)gg.DiscreteY;
+            size.X = x;
+            size.Y = y;
         }
     }
 }

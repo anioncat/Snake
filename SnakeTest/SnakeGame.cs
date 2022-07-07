@@ -9,8 +9,8 @@ namespace SnakeTest
 {
     internal struct WindowSize
     {
-        public int Width { get; set; }
         public int Height { get; set; }
+        public int Width { get; set; }
 
         public WindowSize(int w, int h)
         { Width = w; Height = h; }
@@ -18,21 +18,16 @@ namespace SnakeTest
 
     public class SnakeGame : Game
     {
+        private static readonly GameGrid gg = new GameGrid(window.Width, window.Height);
+        private static readonly Keys[] movementKeys = new Keys[] { Keys.Left, Keys.Right, Keys.Up, Keys.Down };
+        private static readonly WindowSize window = new WindowSize(600, 600);
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-
-        private static readonly WindowSize window = new WindowSize(800, 600);
-
-        private static readonly GameGrid gg = new GameGrid(window.Width, window.Height);
-
-        private Random rng;
         private KeyboardState oldState;
-        private static readonly Keys[] movementKeys = new Keys[] { Keys.Left, Keys.Right, Keys.Up, Keys.Down };
-
-        private Texture2D white;
-
-        private Player player;
         private Pellet pellet;
+        private Player player;
+        private Random rng;
+        private Texture2D white;
 
         public SnakeGame()
         {
@@ -46,6 +41,25 @@ namespace SnakeTest
             IsMouseVisible = true;
         }
 
+        private Point GetRandomPos(Random rng, int w, int h) => new Point(rng.Next(w), rng.Next(h));
+
+        private void UpdateEntitySize(GameGrid gg, Entity e)
+        {
+            e.UpdateSize((int)gg.DiscreteX, (int)gg.DiscreteY);
+        }
+
+        protected override void Draw(GameTime gameTime)
+        {
+            GraphicsDevice.Clear(Color.Black);
+
+            _spriteBatch.Begin();
+            player.Draw(_spriteBatch, white);
+            pellet.Draw(_spriteBatch, white);
+            _spriteBatch.End();
+
+            base.Draw(gameTime);
+        }
+
         protected override void Initialize()
         {
             // Initalise random number generator
@@ -54,6 +68,9 @@ namespace SnakeTest
             Point pStart = new Point(rng.Next(window.Width), rng.Next(window.Height));
             player = new Player(pStart);
             pellet = new Pellet();
+
+            UpdateEntitySize(gg, player);
+            UpdateEntitySize(gg, pellet);
 
             base.Initialize();
         }
@@ -97,7 +114,7 @@ namespace SnakeTest
             }
 
             // Update player
-            player.Update(window);
+            player.Update(window, gg);
 
             // Spawn pellet if unavailable
             if (!pellet.Active)
@@ -107,20 +124,6 @@ namespace SnakeTest
                 Debug.WriteLine($"pellet spawned at: ({pellet.BoundingBox.X}, {pellet.BoundingBox.Y})");
             }
             base.Update(gameTime);
-        }
-
-        private Point GetRandomPos(Random rng, int w, int h) => new Point(rng.Next(w), rng.Next(h));
-
-        protected override void Draw(GameTime gameTime)
-        {
-            GraphicsDevice.Clear(Color.Black);
-
-            _spriteBatch.Begin();
-            player.Draw(_spriteBatch, white);
-            pellet.Draw(_spriteBatch, white);
-            _spriteBatch.End();
-
-            base.Draw(gameTime);
         }
     }
 }

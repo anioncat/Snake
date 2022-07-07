@@ -1,31 +1,37 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Windows.Forms;
+
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace SnakeTest
 {
     internal class Player : SnakeSegment
     {
-        private static readonly byte SPEED_INCREASE = 0;
-        private int score;
-        private byte speed = 3;
+        private static double speedIncrease = 0.1;
+        private GridIndex newGridPos;
         private DoublePoint playerPos;
+        private GridIndex prevGridPos;
+        private int score;
+        private double speed = 2.5;
+
+        public int Score
+        { get { return score; } }
 
         public Player(Point startingPosition)
         {
             score = 0;
             Direction = 0;
             Position = startingPosition;
-            playerPos = new DoublePoint(Position.X, Position.Y);
+            playerPos = startingPosition;
+            newGridPos = new GridIndex();
             boundingBox = new Rectangle(Position, new Point(Size.X, Size.Y));
         }
-
-        public int Score
-        { get { return score; } }
 
         public override void AddSegment()
         {
             score += 1;
             System.Diagnostics.Debug.WriteLine($"Score: {score}");
+            IncreaseSpeed();
             base.AddSegment();
         }
 
@@ -39,39 +45,49 @@ namespace SnakeTest
             Direction = kdi;
         }
 
-        public override void Draw(SpriteBatch _spriteBatch, Texture2D tex)
-        {
-            _spriteBatch.Draw(tex, boundingBox, Color.White);
-            if (!(next is null)) next.Draw(_spriteBatch, tex);
-        }
-
         public void IncreaseSpeed()
         {
-            speed += SPEED_INCREASE;
+            speed += speedIncrease;
+            // Diminishing speedup
+            speedIncrease *= 0.9;
         }
 
-        public void Update(WindowSize w)
+        public void Update(WindowSize w, GameGrid gg)
         {
-            if (!(next is null)) next.Update();
-            if (Direction == MoveDirection.Left)
+            switch (Direction)
             {
-                boundingBox.X -= speed;
-                if (boundingBox.X <= 0) boundingBox.X = w.Width - Size.X;
+                case MoveDirection.Left:
+                    playerPos.X -= speed;
+                    if (playerPos.X <= 0.0) playerPos.X = w.Width - Size.X;
+                    break;
+
+                case MoveDirection.Right:
+                    playerPos.X += speed;
+                    if (playerPos.X >= w.Width - Size.X) playerPos.X = 0.0;
+                    break;
+
+                case MoveDirection.Up:
+                    playerPos.Y -= speed;
+                    if (playerPos.Y <= 0.0) playerPos.Y = w.Height - Size.Y;
+                    break;
+
+                case MoveDirection.Down:
+                    playerPos.Y += speed;
+                    if (playerPos.Y >= w.Height - Size.Y) playerPos.Y = 0.0;
+                    break;
             }
-            if (Direction == MoveDirection.Right)
+            // Is struct so should copy
+            prevGridPos = newGridPos;
+            gg.CalculateIndex(ref newGridPos, playerPos);
+            if (prevGridPos.NotEquals(newGridPos))
             {
-                boundingBox.X += speed;
-                if (boundingBox.X >= w.Width - Size.X) boundingBox.X = 0;
-            }
-            if (Direction == MoveDirection.Up)
-            {
-                boundingBox.Y -= speed;
-                if (boundingBox.Y <= 0) boundingBox.Y = w.Height - Size.Y;
-            }
-            if (Direction == MoveDirection.Down)
-            {
-                boundingBox.Y += speed;
-                if (boundingBox.Y >= w.Height - Size.Y) boundingBox.Y = 0;
+                // Check player reaches next grid position. Need to update first before snapping
+                // segment forwards
+                if (!(next is null)) next.Update();
+                // Move segment to next grid position
+                Point nextPoint = gg.GetPosition(newGridPos);
+                boundingBox.X = nextPoint.X + Padding.X;
+                boundingBox.Y = nextPoint.Y + Padding.Y;
             }
         }
 
@@ -83,6 +99,14 @@ namespace SnakeTest
 
             public DoublePoint(double x, double y)
             { X = x; Y = y; }
+
+            // Allows use of Point and DoublePoint with lossy interchangability
+            public static implicit operator DoublePoint(Point p) => new DoublePoint(p.X, p.Y);
+
+            // Allows use of Point and DoublePoint with lossy interchangability
+            public static implicit operator Point(DoublePoint dp) => new Point((int)dp.X, (int)dp.Y);
+
+            public bool Equals(DoublePoint other) => (X == other.X && Y == other.Y);
 
             public override string ToString() => $"({X}, {Y})";
         }

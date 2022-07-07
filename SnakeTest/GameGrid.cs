@@ -3,13 +3,17 @@
 namespace SnakeTest
 {
     // Encapsulate co-ordinates of the grid, immutable
-    internal readonly struct GridIndex
+    internal struct GridIndex
     {
-        public int X { get; }
-        public int Y { get; }
+        public int X { get; set; }
+        public int Y { get; set; }
 
         public GridIndex(int x, int y)
         { X = x; Y = y; }
+
+        public bool Equals(GridIndex other) => (X == other.X && Y == other.Y);
+
+        public bool NotEquals(GridIndex other) => !(this.Equals(other));
 
         public override string ToString() => $"({X}, {Y})";
     }
@@ -17,7 +21,7 @@ namespace SnakeTest
     internal class GameGrid
     {
         // The number of spaces in the grid
-        private static readonly int GRID_SIZE = 20;
+        private static readonly int GRID_SIZE = 25;
 
         // Discretise the window size to get the grid numbers Spacing is updated with the window,
         // else is read only to other objects
@@ -33,7 +37,11 @@ namespace SnakeTest
         { UpdateWindow(windowWidth, windowHeight); }
 
         // Floors a co-ordinate to give the index the entity is in in the grid
-        public GridIndex CalculateIndex(Point pos) => new GridIndex((int)(pos.X / DiscreteX), (int)(pos.Y / DiscreteY));
+        public void CalculateIndex(ref GridIndex gi, Point pos)
+        {
+            gi.X = (int)(pos.X / DiscreteX);
+            gi.Y = (int)(pos.Y / DiscreteY);
+        }
 
         // Gets the position in the window wrt to the grid
         public Point GetPosition(GridIndex gi) => (new Point((int)(gi.X * DiscreteX), (int)(gi.Y * DiscreteY)));
