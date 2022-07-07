@@ -76,9 +76,11 @@ namespace SnakeTest
                     if (playerPos.Y >= w.Height - Size.Y) playerPos.Y = 0.0;
                     break;
             }
-            // Is struct so should copy
+            // Determine whether the player has moved over a grid threshold. GridPos are struct so
+            // should copy
             prevGridPos = newGridPos;
             gg.CalculateIndex(ref newGridPos, playerPos);
+
             if (prevGridPos.NotEquals(newGridPos))
             {
                 // Check player reaches next grid position. Need to update first before snapping
@@ -90,6 +92,9 @@ namespace SnakeTest
                 boundingBox.Y = nextPoint.Y + Padding.Y;
             }
         }
+
+        public void Die()
+        { }
 
         // Mutable co-ordinates of double type
         public struct DoublePoint

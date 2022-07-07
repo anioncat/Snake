@@ -18,11 +18,13 @@ namespace SnakeTest
 
     public class SnakeGame : Game
     {
-        private static readonly GameGrid gg = new GameGrid(window.Width, window.Height);
-        private static readonly Keys[] movementKeys = new Keys[] { Keys.Left, Keys.Right, Keys.Up, Keys.Down };
-        private static readonly WindowSize window = new WindowSize(600, 600);
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+
+        private static readonly WindowSize window = new WindowSize(600, 600);
+        private static readonly GameGrid gg = new GameGrid(window.Width, window.Height);
+        private static readonly Keys[] movementKeys = new Keys[] { Keys.Left, Keys.Right, Keys.Up, Keys.Down };
+
         private KeyboardState oldState;
         private Pellet pellet;
         private Player player;

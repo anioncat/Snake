@@ -99,8 +99,8 @@ namespace SnakeTest
             size.Y = y;
             boundingBox.Width = (int)(x * 0.8);
             boundingBox.Height = (int)(y * 0.8);
-            padding.X = x - size.X;
-            padding.Y = y - size.Y;
+            padding.X = (size.X - boundingBox.Width) / 2;
+            padding.Y = (size.Y - boundingBox.Height) / 2;
             if (!(next is null)) next.UpdateSize(x, y, size.X, size.Y, padding.X, padding.Y);
         }
     }
