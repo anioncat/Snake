@@ -21,7 +21,7 @@ namespace SnakeTest
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        private static readonly WindowSize window = new WindowSize(600, 600);
+        private static WindowSize window = new WindowSize(600, 600);
         private static readonly GameGrid gg = new GameGrid(window.Width, window.Height);
         private static readonly Keys[] movementKeys = new Keys[] { Keys.Left, Keys.Right, Keys.Up, Keys.Down };
 
@@ -97,8 +97,12 @@ namespace SnakeTest
             // Check state of movement keys i = left right up down
             for (int i = 0; i < movementKeys.Length; ++i)
             {
+                // If direction is locked add to a buffer
+                if (player.MoveLock)
+                {
+                }
                 // Blocks a key being held down blocking movement in other directions
-                if (oldState.IsKeyUp(movementKeys[i]) && kbFrameState.IsKeyDown(movementKeys[i]))
+                else if (oldState.IsKeyUp(movementKeys[i]) && kbFrameState.IsKeyDown(movementKeys[i]))
                 {
                     player.ChangeDirection(1 << i);
                     break;
@@ -121,7 +125,18 @@ namespace SnakeTest
             // Spawn pellet if unavailable
             if (!pellet.Active)
             {
+                bool valid = false;
                 Point randomPos = gg.SnapPosition(GetRandomPos(rng, window.Width - pellet.Size.X, window.Height - pellet.Size.Y));
+                while (!valid)
+                {
+                    if (!player.CheckContains(randomPos))
+                    { valid = true; }
+                    else
+                    {
+                        Debug.WriteLine($"pellet failed to spawn. retrying.");
+                        randomPos = gg.SnapPosition(GetRandomPos(rng, window.Width - pellet.Size.X, window.Height - pellet.Size.Y));
+                    }
+                }
                 pellet.Spawn(randomPos);
                 Debug.WriteLine($"pellet spawned at: ({pellet.BoundingBox.X}, {pellet.BoundingBox.Y})");
             }

@@ -21,7 +21,7 @@ namespace SnakeTest
     internal class GameGrid
     {
         // The number of spaces in the grid
-        private static readonly int GRID_SIZE = 25;
+        private static readonly int GRID_SIZE = 20;
 
         // Discretise the window size to get the grid numbers Spacing is updated with the window,
         // else is read only to other objects

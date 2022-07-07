@@ -1,7 +1,4 @@
-﻿using System.Windows.Forms;
-
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
 
 namespace SnakeTest
 {
@@ -13,6 +10,10 @@ namespace SnakeTest
         private GridIndex prevGridPos;
         private int score;
         private double speed = 2.5;
+        private static bool moveLock = false;
+
+        public bool MoveLock
+        { get { return moveLock; } }
 
         public int Score
         { get { return score; } }
@@ -43,6 +44,7 @@ namespace SnakeTest
             if ((Direction | kdi) == (MoveDirection.Right | MoveDirection.Left)) return;
             if ((Direction | kdi) == (MoveDirection.Up | MoveDirection.Down)) return;
             Direction = kdi;
+            moveLock = true;
         }
 
         public void IncreaseSpeed()
@@ -90,6 +92,8 @@ namespace SnakeTest
                 Point nextPoint = gg.GetPosition(newGridPos);
                 boundingBox.X = nextPoint.X + Padding.X;
                 boundingBox.Y = nextPoint.Y + Padding.Y;
+                Position = nextPoint;
+                moveLock = false;
             }
         }
 

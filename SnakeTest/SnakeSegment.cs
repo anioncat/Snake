@@ -66,14 +66,13 @@ namespace SnakeTest
             else next.AddSegment();
         }
 
-        public virtual bool CheckIntersect(Rectangle other)
+        // Checks each segment for an intersection with other
+        public virtual bool CheckContains(Point other)
         {
-            if (!(next is null)) return next.CheckIntersect(other);
-            else
-            {
-                Rectangle curSeg = new Rectangle(Position, Size);
-                return other.Intersects(curSeg);
-            }
+            Rectangle curSeg = new Rectangle(Position, Size);
+            bool intersect = curSeg.Contains(other);
+            if (!(next is null)) intersect |= next.CheckContains(other);
+            return intersect;
         }
 
         public override void Draw(SpriteBatch _spriteBatch, Texture2D tex)
@@ -90,6 +89,7 @@ namespace SnakeTest
 
             boundingBox.X = prev.boundingBox.X;
             boundingBox.Y = prev.boundingBox.Y;
+            Position = prev.Position;
         }
 
         // This should be called at head
