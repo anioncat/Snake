@@ -20,13 +20,13 @@ namespace SnakeTest
     {
         private static readonly Keys[] movementKeys = new Keys[] { Keys.Left, Keys.Right, Keys.Up, Keys.Down };
         private static GameGrid gg;
-        private static int score;
         private static WindowSize window = new WindowSize(600, 600);
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private KeyboardState oldState;
         private Pellet pellet;
         private Player player;
+        private UI ui;
         private Random rng;
         private Texture2D white;
 
@@ -48,7 +48,7 @@ namespace SnakeTest
             if (pellet.BoundingBox.Intersects(player.BoundingBox))
             {
                 pellet.Active = false;
-                score += 1;
+                ui.AddScore();
                 player.AddSegment();
                 player.IncreaseSpeed();
             }
@@ -104,6 +104,7 @@ namespace SnakeTest
             _spriteBatch.Begin();
             player.Draw(_spriteBatch, white);
             pellet.Draw(_spriteBatch, white);
+            ui.Draw(_spriteBatch);
             _spriteBatch.End();
 
             base.Draw(gameTime);
@@ -118,6 +119,7 @@ namespace SnakeTest
             Point pStart = new Point(rng.Next(window.Width), rng.Next(window.Height));
             player = new Player(pStart);
             pellet = new Pellet();
+            ui = new UI();
 
             UpdateEntitySize(gg, player);
             UpdateEntitySize(gg, pellet);
@@ -131,6 +133,7 @@ namespace SnakeTest
 
             white = new Texture2D(GraphicsDevice, 1, 1);
             white.SetData<Color>(new Color[] { Color.White });
+            ui.Load(Content, _spriteBatch);
         }
 
         protected override void Update(GameTime gameTime)
