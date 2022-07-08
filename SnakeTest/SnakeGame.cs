@@ -5,8 +5,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-
 namespace SnakeTest
 {
     internal struct WindowSize
@@ -20,9 +18,9 @@ namespace SnakeTest
 
     public class SnakeGame : Game
     {
-        private static readonly Keys[] movementKeys = new Keys[] { Keys.Left, Keys.Right, Keys.Up, Keys.Down };
-        private static GameGrid gg;
-        private static WindowSize window;
+        private static readonly Keys[] s_movementKeys = new Keys[] { Keys.Left, Keys.Right, Keys.Up, Keys.Down };
+        private static GameGrid s_gg;
+        private static WindowSize s_window;
         private readonly GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private KeyboardState oldState;
@@ -34,63 +32,93 @@ namespace SnakeTest
 
         public SnakeGame()
         {
-            window = new WindowSize(600, 600);
+            s_window = new WindowSize(600, 600);
             _graphics = new GraphicsDeviceManager(this)
             {
-                PreferredBackBufferWidth = window.Width,
-                PreferredBackBufferHeight = window.Height
+                PreferredBackBufferWidth = s_window.Width,
+                PreferredBackBufferHeight = s_window.Height
             };
             _graphics.ApplyChanges();
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
 
-        private void CheckPlayerCollision()
+        /// <summary>
+        /// Add a snake body segment; add 1 to score
+        /// </summary>
+        private void AddTail()
         {
-            // Check collision
-            if (pellet.BoundingBox.Intersects(player.BoundingBox))
-            {
-                pellet.Active = false;
-                ui.AddScore();
-                player.AddSegment();
-                player.IncreaseSpeed();
-            }
+            pellet.Active = false;
+            ui.AddScore();
+            player.AddSegment();
         }
 
+        /// <summary>
+        /// Checks if the player has "eaten" a pellet
+        /// </summary>
+        private bool CheckPlayerCollidePellet() => pellet.BoundingBox.Intersects(player.BoundingBox);
+
+        /// <summary>
+        /// Generates a random point the is free on the grid
+        /// </summary>
+        /// <returns>a Point on the grid that is empty</returns>
         private Point GenerateValidPelletSpawn()
         {
-            Point randomPos = gg.SnapPosition(GetRandomPos(rng, window.Width - pellet.Size.X, window.Height - pellet.Size.Y));
+            Point randomPos = s_gg.SnapPosition(GetRandomPos(s_window.Width - pellet.Size.X, s_window.Height - pellet.Size.Y));
             while (player.CheckContains(randomPos))
             {
                 Debug.WriteLine($"pellet failed to spawn. retrying.");
-                randomPos = gg.SnapPosition(GetRandomPos(rng, window.Width - pellet.Size.X, window.Height - pellet.Size.Y));
+                randomPos = s_gg.SnapPosition(GetRandomPos(s_window.Width - pellet.Size.X, s_window.Height - pellet.Size.Y));
             }
             return randomPos;
         }
 
-        private Point GetRandomPos(Random rng, int w, int h) => new Point(rng.Next(w), rng.Next(h));
+        /// <summary>
+        /// Generates a random point with the random number generator
+        /// </summary>
+        /// <returns>a new random point</returns>
+        private Point GetRandomPos(int w, int h) => new Point(rng.Next(w), rng.Next(h));
 
+        /// <summary>
+        /// Checks if the player has collided with themselves for a game over
+        /// </summary>
+        private bool PlayerSelfCollision() => player.CollideSelf();
+
+        /// <summary>
+        /// Reset the game to a starting state
+        /// </summary>
+        private void ResetGame()
+        {
+            var pStart = new Point(rng.Next(s_window.Width), rng.Next(s_window.Height));
+            player.Reset(pStart);
+            pellet.Active = false;
+            ui.UpdateHighScore();
+        }
+
+        /// <summary>
+        /// If the player scored a point, respawn the pellet at ta random location
+        /// </summary>
         private void SpawnNewPellet()
         {
             pellet.Spawn(GenerateValidPelletSpawn());
             Debug.WriteLine($"pellet spawned at: ({pellet.BoundingBox.X}, {pellet.BoundingBox.Y})");
         }
 
-        private void UpdateEntitySize(GameGrid gg, Entity e)
-        {
-            e.UpdateSize((int)gg.DiscreteX, (int)gg.DiscreteY);
-        }
+        private void UpdateEntitySize(GameGrid gg, Entity e) => e.UpdateSize((int)gg.DiscreteX, (int)gg.DiscreteY);
 
+        /// <summary>
+        /// Checks that the player has given input to change the snake move direction
+        /// </summary>
         private void UpdatePlayerMovementDirection()
         {
             // Get current keyboard state
-            KeyboardState kbFrameState = Keyboard.GetState();
+            var kbFrameState = Keyboard.GetState();
 
             // Check state of movement keys i = left right up down
-            for (int i = 0; i < movementKeys.Length; ++i)
+            for (int i = 0; i < s_movementKeys.Length; ++i)
             {
                 // Blocks a key being held down blocking movement in other directions
-                if (!player.MoveLock && oldState.IsKeyUp(movementKeys[i]) && kbFrameState.IsKeyDown(movementKeys[i]))
+                if (!player.MoveLock && oldState.IsKeyUp(s_movementKeys[i]) && kbFrameState.IsKeyDown(s_movementKeys[i]))
                 {
                     player.ChangeDirection(1 << i);
                     break;
@@ -115,17 +143,17 @@ namespace SnakeTest
 
         protected override void Initialize()
         {
-            gg = new GameGrid(window);
+            s_gg = new GameGrid(s_window);
             // Initalise random number generator
             rng = new Random();
             // Initialise player position
-            Point pStart = new Point(rng.Next(window.Width), rng.Next(window.Height));
+            var pStart = new Point(rng.Next(s_window.Width), rng.Next(s_window.Height));
             player = new Player(pStart);
             pellet = new Pellet();
             ui = new UI();
 
-            UpdateEntitySize(gg, player);
-            UpdateEntitySize(gg, pellet);
+            UpdateEntitySize(s_gg, player);
+            UpdateEntitySize(s_gg, pellet);
 
             base.Initialize();
         }
@@ -147,8 +175,9 @@ namespace SnakeTest
 
             // Update player
             UpdatePlayerMovementDirection();
-            CheckPlayerCollision();
-            player.Update(gg);
+            if (PlayerSelfCollision()) ResetGame();
+            if (CheckPlayerCollidePellet()) AddTail();
+            player.Update(s_gg);
 
             // Spawn pellet if eaten
             if (!pellet.Active) SpawnNewPellet();

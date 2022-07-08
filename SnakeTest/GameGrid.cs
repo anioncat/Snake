@@ -2,23 +2,49 @@
 
 namespace SnakeTest
 {
+    /// <summary>
+    /// Helper class to calculate the position of objects within a grid
+    /// </summary>
     internal class GameGrid
     {
-        // The number of spaces in the grid
-        private static readonly int GRID_SIZE = 15;
+        /// <summary>
+        /// The number of spaces in the grid
+        /// </summary>
+        private const int GRID_SIZE = 15;
 
-        // Discretise the window size to get the grid numbers Spacing is updated with the window,
-        // else is read only to other objects
+        /// <summary>
+        /// Discretise the window size to get the grid numbers <br/> Spacing is updated with the
+        /// window, else is read only to other objects
+        /// </summary>
         private readonly double[] discretisedSpace = new double[2];
 
         private readonly int[] midOffset = new int[2];
 
         private WindowSize window;
 
+        /// <summary>
+        /// Gets the grid spacing in the X direction
+        /// </summary>
         public double DiscreteX => discretisedSpace[0];
+
+        /// <summary>
+        /// Gets the grid spacing the Y direction
+        /// </summary>
         public double DiscreteY => discretisedSpace[1];
+
+        /// <summary>
+        /// Gets the pre-calculated pixel offset for the midpoint of the grid X
+        /// </summary>
         public int MidOffsetX => midOffset[0];
+
+        /// <summary>
+        /// Gets the pre-calculated pixel offset for the midpoint of the grid Y
+        /// </summary>
         public int MidOffsetY => midOffset[1];
+
+        /// <summary>
+        /// Internal copy of the game window size
+        /// </summary>
         public WindowSize Window => window;
 
         public GameGrid(WindowSize window)
@@ -27,17 +53,31 @@ namespace SnakeTest
             UpdateWindow();
         }
 
-        // Floors a co-ordinate to give the index the entity is in in the grid
+        /// <summary>
+        /// Floors a co-ordinate to give the index the entity is in in the grid
+        /// </summary>
         public void CalculateIndex(ref Point gi, Vector2 pos)
         {
             gi.X = (int)(pos.X / DiscreteX);
             gi.Y = (int)(pos.Y / DiscreteY);
         }
 
-        // Gets the position in the window wrt to the grid
+        /// <summary>
+        /// Helper method to convert Point type to Vector2
+        /// </summary>
+        public void CalculateIndex(ref Point gi, Point pos)
+        {
+            CalculateIndex(ref gi, pos.ToVector2());
+        }
+
+        /// <summary>
+        /// Gets the position in the window wrt to the grid
+        /// </summary>
         public Point GetPosition(Point gi) => (new Point((int)(gi.X * DiscreteX), (int)(gi.Y * DiscreteY)));
 
-        // Gets the snapped position in the window on the grid
+        /// <summary>
+        /// Gets the snapped position in the window on the grid
+        /// </summary>
         public Point SnapPosition(Point pos)
         {
             int xOffset = pos.X % (int)DiscreteX;
@@ -45,7 +85,9 @@ namespace SnakeTest
             return new Point(pos.X - xOffset, pos.Y - yOffset);
         }
 
-        // Updates the spacing between grid indices wrt window size
+        /// <summary>
+        /// Updates the spacing between grid indices w.r.t. window size
+        /// </summary>
         public void UpdateWindow()
         {
             discretisedSpace[0] = window.Width / GRID_SIZE;

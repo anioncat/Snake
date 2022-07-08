@@ -5,22 +5,15 @@ namespace SnakeTest
 {
     internal class SnakeSegment : Entity
     {
-        // Padding the center the segment on the grid
+        /// <summary>
+        /// Padding to center the segment on the grid
+        /// </summary>
         private Point padding;
-
-        // Size of the object on screen
-        private Point size;
 
         protected SnakeSegment next;
         protected SnakeSegment prev;
 
         protected Point Padding => padding;
-
-        // Bit flag to determine movement direction
-        public MoveDirection Direction { get; set; }
-
-        // The size of the object. It can only be updated via the UpdateSize method
-        public Point Size => size;
 
         public SnakeSegment()
         { next = null; prev = null; }
@@ -33,10 +26,18 @@ namespace SnakeTest
             padding = prevSegment.Padding;
             // Place out of bounds
             Position = new Point(-20, -20);
-            boundingBox = prevSegment.BoundingBox;
+            boundingBox = prevSegment.boundingBox;
         }
 
-        // Recursive call with precalced values
+        /// <summary>
+        /// Recursive call with precalced values
+        /// </summary>
+        /// <param name="x">size x</param>
+        /// <param name="y">size y</param>
+        /// <param name="sx">bbox size x</param>
+        /// <param name="sy">bbox size y</param>
+        /// <param name="px">padding x</param>
+        /// <param name="py">padding y</param>
         private void UpdateSize(int x, int y, int sx, int sy, int px, int py)
         {
             size.X = x;
@@ -48,17 +49,23 @@ namespace SnakeTest
             if (!(next is null)) next.UpdateSize(x, y, sx, sy, px, py);
         }
 
-        // Adds a segment to the end of the LL
+        /// <summary>
+        /// Adds a segment to the end of the LL
+        /// </summary>
         public virtual void AddSegment()
         {
             if (next is null) next = new SnakeSegment(this);
             else next.AddSegment();
         }
 
-        // Checks each segment for an intersection with other
+        /// <summary>
+        /// Checks each segment for an intersection with a co-ordinate
+        /// </summary>
+        /// <param name="other">the co-ordinate (position) of the other object</param>
+        /// <returns></returns>
         public virtual bool CheckContains(Point other)
         {
-            Rectangle curSeg = new Rectangle(Position, Size);
+            var curSeg = new Rectangle(Position, Size);
             bool intersect = curSeg.Contains(other);
             if (!(next is null)) intersect |= next.CheckContains(other);
             return intersect;
@@ -72,12 +79,8 @@ namespace SnakeTest
 
         public virtual void Update()
         {
-            // Move in same direction Update direction to head's direction Rotate if direction
-            // changed Cascade
             if (!(next is null)) next.Update();
-
-            boundingBox.X = prev.boundingBox.X;
-            boundingBox.Y = prev.boundingBox.Y;
+            boundingBox = prev.boundingBox;
             Position = prev.Position;
         }
 
