@@ -5,6 +5,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+
 namespace SnakeTest
 {
     internal struct WindowSize
@@ -20,18 +22,19 @@ namespace SnakeTest
     {
         private static readonly Keys[] movementKeys = new Keys[] { Keys.Left, Keys.Right, Keys.Up, Keys.Down };
         private static GameGrid gg;
-        private static WindowSize window = new WindowSize(600, 600);
-        private GraphicsDeviceManager _graphics;
+        private static WindowSize window;
+        private readonly GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private KeyboardState oldState;
         private Pellet pellet;
         private Player player;
-        private UI ui;
         private Random rng;
+        private UI ui;
         private Texture2D white;
 
         public SnakeGame()
         {
+            window = new WindowSize(600, 600);
             _graphics = new GraphicsDeviceManager(this)
             {
                 PreferredBackBufferWidth = window.Width,

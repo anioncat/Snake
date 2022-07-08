@@ -5,10 +5,10 @@ namespace SnakeTest
 {
     internal class Player : SnakeSegment
     {
-        private static float speedIncrease = 0.3f;
-        private GridIndex newGridPos;
+        private static float speedIncrease = 0.15f;
+        private Point newGridPos;
         private Vector2 playerPos;
-        private GridIndex prevGridPos;
+        private Point prevGridPos;
         private float speed = 1.7f;
 
         public bool MoveLock { get; private set; } = false;
@@ -19,14 +19,8 @@ namespace SnakeTest
             Position = startingPosition;
             playerPos.X = startingPosition.X;
             playerPos.Y = startingPosition.Y;
-            newGridPos = new GridIndex(-1, -1);
+            newGridPos = new Point(-1, -1);
             boundingBox = new Rectangle(Position, new Point(Size.X, Size.Y));
-        }
-
-        public override void Draw(SpriteBatch _spriteBatch, Texture2D tex)
-        {
-            if (!(next is null)) next.Draw(_spriteBatch, tex);
-            _spriteBatch.Draw(tex, boundingBox, Color.Red);
         }
 
         public override void AddSegment()
@@ -35,15 +29,29 @@ namespace SnakeTest
             base.AddSegment();
         }
 
+        private bool BlockSelfTurn(MoveDirection kdi)
+        {
+            MoveDirection dirOrKdi = this.Direction | kdi;
+            return (dirOrKdi == (MoveDirection.Right | MoveDirection.Left)) || (dirOrKdi == (MoveDirection.Up | MoveDirection.Down));
+        }
+
         public void ChangeDirection(int i)
         {
             // Cast value to enum
             MoveDirection kdi = (MoveDirection)i;
             // Block turn back on self
-            if ((Direction | kdi) == (MoveDirection.Right | MoveDirection.Left)) return;
-            if ((Direction | kdi) == (MoveDirection.Up | MoveDirection.Down)) return;
+            if (BlockSelfTurn(kdi)) return;
             Direction = kdi;
             MoveLock = true;
+        }
+
+        public void Die()
+        { }
+
+        public override void Draw(SpriteBatch _spriteBatch, Texture2D tex)
+        {
+            if (!(next is null)) next.Draw(_spriteBatch, tex);
+            _spriteBatch.Draw(tex, boundingBox, Color.Red);
         }
 
         public void IncreaseSpeed()
@@ -82,7 +90,7 @@ namespace SnakeTest
             prevGridPos = newGridPos;
             gg.CalculateIndex(ref newGridPos, playerPos);
 
-            if (prevGridPos.NotEquals(newGridPos))
+            if (!prevGridPos.Equals(newGridPos))
             {
                 // Check player reaches next grid position. Need to update first before snapping
                 // segment forwards
@@ -97,8 +105,5 @@ namespace SnakeTest
                 MoveLock = false;
             }
         }
-
-        public void Die()
-        { }
     }
 }

@@ -7,8 +7,7 @@ namespace SnakeTest
     {
         protected Rectangle boundingBox;
 
-        public Rectangle BoundingBox
-        { get { return boundingBox; } }
+        public Rectangle BoundingBox => boundingBox;
 
         public virtual Point Position { get; set; }
 

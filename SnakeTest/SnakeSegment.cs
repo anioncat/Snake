@@ -3,15 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace SnakeTest
 {
-    // Direction flags
-    internal enum MoveDirection
-    {
-        Left = 1 << 0,
-        Right = 1 << 1,
-        Up = 1 << 2,
-        Down = 1 << 3
-    }
-
     internal class SnakeSegment : Entity
     {
         // Padding the center the segment on the grid
@@ -23,15 +14,13 @@ namespace SnakeTest
         protected SnakeSegment next;
         protected SnakeSegment prev;
 
-        protected Point Padding
-        { get { return padding; } }
+        protected Point Padding => padding;
 
         // Bit flag to determine movement direction
         public MoveDirection Direction { get; set; }
 
         // The size of the object. It can only be updated via the UpdateSize method
-        public Point Size
-        { get { return size; } }
+        public Point Size => size;
 
         public SnakeSegment()
         { next = null; prev = null; }
