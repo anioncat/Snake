@@ -112,7 +112,7 @@ namespace SnakeTest
 
         protected override void Initialize()
         {
-            gg = new GameGrid(window.Width, window.Height);
+            gg = new GameGrid(window);
             // Initalise random number generator
             rng = new Random();
             // Initialise player position
@@ -133,7 +133,7 @@ namespace SnakeTest
 
             white = new Texture2D(GraphicsDevice, 1, 1);
             white.SetData<Color>(new Color[] { Color.White });
-            ui.Load(Content, _spriteBatch);
+            ui.Load(Content);
         }
 
         protected override void Update(GameTime gameTime)
@@ -145,7 +145,7 @@ namespace SnakeTest
             // Update player
             UpdatePlayerMovementDirection();
             CheckPlayerCollision();
-            player.Update(window, gg);
+            player.Update(gg);
 
             // Spawn pellet if eaten
             if (!pellet.Active) SpawnNewPellet();

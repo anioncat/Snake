@@ -9,8 +9,7 @@ namespace SnakeTest
 
         public bool Active { get; set; }
 
-        public Point Size
-        { get { return size; } }
+        public Point Size => size;
 
         public Pellet()
         { Active = false; }

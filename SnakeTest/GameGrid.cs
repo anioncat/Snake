@@ -27,17 +27,24 @@ namespace SnakeTest
         // else is read only to other objects
         private readonly double[] discretisedSpace = new double[2];
 
-        public double DiscreteX
-        { get { return discretisedSpace[0]; } }
+        private readonly int[] midOffset = new int[2];
 
-        public double DiscreteY
-        { get { return discretisedSpace[1]; } }
+        private WindowSize window;
 
-        public GameGrid(int windowWidth, int windowHeight)
-        { UpdateWindow(windowWidth, windowHeight); }
+        public double DiscreteX => discretisedSpace[0];
+        public double DiscreteY => discretisedSpace[1];
+        public int MidOffsetX => midOffset[0];
+        public int MidOffsetY => midOffset[1];
+        public WindowSize Window => window;
+
+        public GameGrid(WindowSize window)
+        {
+            this.window = window;
+            UpdateWindow();
+        }
 
         // Floors a co-ordinate to give the index the entity is in in the grid
-        public void CalculateIndex(ref GridIndex gi, Point pos)
+        public void CalculateIndex(ref GridIndex gi, Vector2 pos)
         {
             gi.X = (int)(pos.X / DiscreteX);
             gi.Y = (int)(pos.Y / DiscreteY);
@@ -55,11 +62,13 @@ namespace SnakeTest
         }
 
         // Updates the spacing between grid indices wrt window size
-        public void UpdateWindow(int windowWidth, int windowHeight)
+        public void UpdateWindow()
         {
-            discretisedSpace[0] = windowWidth / GRID_SIZE;
-            discretisedSpace[1] = windowHeight / GRID_SIZE;
-            System.Diagnostics.Debug.WriteLine($"Grid size snapped at ({discretisedSpace[0]}, {discretisedSpace[1]}) for W:{windowWidth} H:{windowHeight}");
+            discretisedSpace[0] = window.Width / GRID_SIZE;
+            midOffset[0] = (int)(discretisedSpace[0] / 2);
+            discretisedSpace[1] = window.Height / GRID_SIZE;
+            midOffset[1] = (int)(discretisedSpace[1] / 2);
+            System.Diagnostics.Debug.WriteLine($"Grid size snapped at ({discretisedSpace[0]}, {discretisedSpace[1]}) for W:{window.Width} H:{window.Height}");
         }
     }
 }

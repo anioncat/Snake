@@ -1,26 +1,32 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace SnakeTest
 {
     internal class Player : SnakeSegment
     {
-        private static double speedIncrease = 0.2;
+        private static float speedIncrease = 0.3f;
         private GridIndex newGridPos;
-        private DoublePoint playerPos;
+        private Vector2 playerPos;
         private GridIndex prevGridPos;
-        private double speed = 2.5;
-        private static bool moveLock = false;
+        private float speed = 1.7f;
 
-        public bool MoveLock
-        { get { return moveLock; } }
+        public bool MoveLock { get; private set; } = false;
 
         public Player(Point startingPosition)
         {
             Direction = 0;
             Position = startingPosition;
-            playerPos = startingPosition;
-            newGridPos = new GridIndex();
+            playerPos.X = startingPosition.X;
+            playerPos.Y = startingPosition.Y;
+            newGridPos = new GridIndex(-1, -1);
             boundingBox = new Rectangle(Position, new Point(Size.X, Size.Y));
+        }
+
+        public override void Draw(SpriteBatch _spriteBatch, Texture2D tex)
+        {
+            if (!(next is null)) next.Draw(_spriteBatch, tex);
+            _spriteBatch.Draw(tex, boundingBox, Color.Red);
         }
 
         public override void AddSegment()
@@ -37,38 +43,38 @@ namespace SnakeTest
             if ((Direction | kdi) == (MoveDirection.Right | MoveDirection.Left)) return;
             if ((Direction | kdi) == (MoveDirection.Up | MoveDirection.Down)) return;
             Direction = kdi;
-            moveLock = true;
+            MoveLock = true;
         }
 
         public void IncreaseSpeed()
         {
             speed += speedIncrease;
             // Diminishing speedup
-            speedIncrease *= 0.9;
+            speedIncrease *= 0.9f;
         }
 
-        public void Update(WindowSize w, GameGrid gg)
+        public void Update(GameGrid gg)
         {
             switch (Direction)
             {
                 case MoveDirection.Left:
                     playerPos.X -= speed;
-                    if (playerPos.X <= 0.0) playerPos.X = w.Width - Size.X;
+                    if (playerPos.X <= 0.0) playerPos.X = gg.Window.Width - Size.X;
                     break;
 
                 case MoveDirection.Right:
                     playerPos.X += speed;
-                    if (playerPos.X >= w.Width) playerPos.X = 0.0;
+                    if (playerPos.X >= gg.Window.Width) playerPos.X = 0.0f;
                     break;
 
                 case MoveDirection.Up:
                     playerPos.Y -= speed;
-                    if (playerPos.Y <= 0.0) playerPos.Y = w.Height - Size.Y;
+                    if (playerPos.Y <= 0.0) playerPos.Y = gg.Window.Height - Size.Y;
                     break;
 
                 case MoveDirection.Down:
                     playerPos.Y += speed;
-                    if (playerPos.Y >= w.Height) playerPos.Y = 0.0;
+                    if (playerPos.Y >= gg.Window.Height) playerPos.Y = 0.0f;
                     break;
             }
             // Determine whether the player has moved over a grid threshold. GridPos are struct so
@@ -85,32 +91,14 @@ namespace SnakeTest
                 Point nextPoint = gg.GetPosition(newGridPos);
                 boundingBox.X = nextPoint.X + Padding.X;
                 boundingBox.Y = nextPoint.Y + Padding.Y;
+                playerPos.X = nextPoint.X + gg.MidOffsetX;
+                playerPos.Y = nextPoint.Y + gg.MidOffsetY;
                 Position = nextPoint;
-                moveLock = false;
+                MoveLock = false;
             }
         }
 
         public void Die()
         { }
-
-        // Mutable co-ordinates of double type
-        public struct DoublePoint
-        {
-            public double X { get; set; }
-            public double Y { get; set; }
-
-            public DoublePoint(double x, double y)
-            { X = x; Y = y; }
-
-            // Allows use of Point and DoublePoint with lossy interchangability
-            public static implicit operator DoublePoint(Point p) => new DoublePoint(p.X, p.Y);
-
-            // Allows use of Point and DoublePoint with lossy interchangability
-            public static implicit operator Point(DoublePoint dp) => new Point((int)dp.X, (int)dp.Y);
-
-            public bool Equals(DoublePoint other) => (X == other.X && Y == other.Y);
-
-            public override string ToString() => $"({X}, {Y})";
-        }
     }
 }
