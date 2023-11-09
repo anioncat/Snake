@@ -1,4 +1,4 @@
-﻿namespace SnakeTest
+﻿namespace SnakeGame
 {
     // Direction flags
     internal enum MoveDirection

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace SnakeTest
+namespace SnakeGame
 {
     /// <summary>
     /// Helper class to calculate the position of objects within a grid
