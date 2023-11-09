@@ -14,13 +14,13 @@ namespace SnakeGame
         }
 
         public override void Draw(SpriteBatch _spriteBatch, Texture2D tex)
-        { _spriteBatch.Draw(tex, this.boundingBox, Color.White); }
+        { _spriteBatch.Draw(tex, boundingBox, Color.White); }
 
         public void Spawn(Point pos)
         {
-            this.Position = pos;
-            this.boundingBox = new Rectangle(Position, new Point(size.X));
-            this.Active = true;
+            Position = pos;
+            boundingBox = new Rectangle(Position, new Point(size.X));
+            Active = true;
         }
 
         public override void UpdateSize(int x, int y)

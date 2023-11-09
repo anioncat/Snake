@@ -46,7 +46,7 @@ namespace SnakeGame
             boundingBox.Height = sy;
             padding.X = px;
             padding.Y = py;
-            if (!(next is null)) next.UpdateSize(x, y, sx, sy, px, py);
+            next?.UpdateSize(x, y, sx, sy, px, py);
         }
 
         /// <summary>
@@ -74,12 +74,12 @@ namespace SnakeGame
         public override void Draw(SpriteBatch _spriteBatch, Texture2D tex)
         {
             _spriteBatch.Draw(tex, boundingBox, Color.White);
-            if (!(next is null)) next.Draw(_spriteBatch, tex);
+            next?.Draw(_spriteBatch, tex);
         }
 
         public virtual void Update()
         {
-            if (!(next is null)) next.Update();
+            next?.Update();
             boundingBox = prev.boundingBox;
             Position = prev.Position;
         }
@@ -93,7 +93,7 @@ namespace SnakeGame
             boundingBox.Height = (int)(y * 0.8);
             padding.X = (size.X - boundingBox.Width) / 2;
             padding.Y = (size.Y - boundingBox.Height) / 2;
-            if (!(next is null)) next.UpdateSize(x, y, size.X, size.Y, padding.X, padding.Y);
+            next?.UpdateSize(x, y, size.X, size.Y, padding.X, padding.Y);
         }
     }
 }

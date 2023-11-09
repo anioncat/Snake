@@ -10,22 +10,22 @@ namespace SnakeGame
         public BoundingBox() { }
         public BoundingBox(Vector2 min, Vector2 max)
         {
-            this.Min = min;
-            this.Max = max;
+            Min = min;
+            Max = max;
         }
 
-        public BoundingBox(float xmin, float xmax, float ymin, float ymax)
+        public BoundingBox(float xMin, float xMax, float yMin, float yMax)
         {
-            this.Min = new Vector2(xmin, ymin);
-            this.Max = new Vector2(xmax, ymax);
+            Min = new Vector2(xMin, yMin);
+            Max = new Vector2(xMax, yMax);
         }
 
         public bool Intersect(BoundingBox other)
         {
-            if (this.Min.X < other.Max.X) { return true; }
-            if (this.Max.X > other.Min.X) { return true; }
-            if (this.Min.Y < other.Max.Y) { return true; }
-            if (this.Max.Y > other.Min.Y) { return true; }
+            if (Min.X < other.Max.X) { return true; }
+            if (Max.X > other.Min.X) { return true; }
+            if (Min.Y < other.Max.Y) { return true; }
+            if (Max.Y > other.Min.Y) { return true; }
             return false;
         }
     }

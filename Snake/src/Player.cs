@@ -142,7 +142,7 @@ namespace SnakeGame
             {
                 // Check player reaches next grid position. Need to update first before snapping
                 // segment forwards
-                if (!(next is null)) next.Update();
+                next?.Update();
                 // Move segment to next grid position
                 Point nextPoint = gg.GetPosition(newGridPos);
                 boundingBox.X = nextPoint.X + Padding.X;
