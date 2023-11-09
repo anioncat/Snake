@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Diagnostics;
+using Microsoft.Xna.Framework;
 
 namespace SnakeGame
 {
@@ -70,10 +71,15 @@ namespace SnakeGame
             CalculateIndex(ref gi, pos.ToVector2());
         }
 
+        public Vector2 GetGridCenterOffset(Point gridPosition, Vector2 position)
+        {
+            return new Vector2(gridPosition.X + MidOffsetX - position.X, gridPosition.Y + MidOffsetY - position.Y);
+        }
+
         /// <summary>
         /// Gets the position in the window wrt to the grid
         /// </summary>
-        public Point GetPosition(Point gi) => (new Point((int)(gi.X * DiscreteX), (int)(gi.Y * DiscreteY)));
+        public Point GetPosition(Point gi) => new Point((int)(gi.X * DiscreteX), (int)(gi.Y * DiscreteY));
 
         /// <summary>
         /// Gets the snapped position in the window on the grid
