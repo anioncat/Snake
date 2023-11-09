@@ -120,7 +120,7 @@ namespace SnakeGame
                 // Blocks a key being held down blocking movement in other directions
                 if (!player.MoveLock && oldState.IsKeyUp(s_movementKeys[i]) && kbFrameState.IsKeyDown(s_movementKeys[i]))
                 {
-                    player.ChangeDirection(1 << i);
+                    player.ChangeDirection(1 << i, s_gg);
                     break;
                 }
             }

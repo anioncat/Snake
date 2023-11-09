@@ -47,7 +47,7 @@ namespace SnakeGame
         /// <returns>true if the input means the player would move back into themselves</returns>
         private bool BlockSelfTurn(MoveDirection kdi)
         {
-            MoveDirection dirOrKdi = this.Direction | kdi;
+            MoveDirection dirOrKdi = Direction | kdi;
             return (dirOrKdi == (MoveDirection.Right | MoveDirection.Left)) || (dirOrKdi == (MoveDirection.Up | MoveDirection.Down));
         }
 
@@ -61,11 +61,27 @@ namespace SnakeGame
         /// Changes the direction the player is moving
         /// </summary>
         /// <param name="i">The flag received as input as an int</param>
-        public void ChangeDirection(int i)
+        public void ChangeDirection(int i, GameGrid gg)
         {
             // Cast value to enum
             var kdi = (MoveDirection)i;
             if (BlockSelfTurn(kdi)) return;
+            var offset = gg.GetGridCenterOffset(Position, playerPos).Length();
+            playerPos = gg.GetCellCenter(Position).ToVector2();
+            switch (kdi) {
+                case MoveDirection.Left:
+                    playerPos.X -= offset;
+                    break;
+                case MoveDirection.Right:
+                    playerPos.X += offset;
+                    break;
+                case MoveDirection.Up:
+                    playerPos.Y -= offset;
+                    break;
+                case MoveDirection.Down:
+                    playerPos.Y += offset;
+                    break;
+            }
             Direction = kdi;
             MoveLock = true;
         }

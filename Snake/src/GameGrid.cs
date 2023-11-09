@@ -76,6 +76,10 @@ namespace SnakeGame
             return new Vector2(gridPosition.X + MidOffsetX - position.X, gridPosition.Y + MidOffsetY - position.Y);
         }
 
+        public Point GetCellCenter(Point gridPosition) {
+            return new Point(gridPosition.X + MidOffsetX, gridPosition.Y + MidOffsetY);
+        }
+
         /// <summary>
         /// Gets the position in the window wrt to the grid
         /// </summary>
